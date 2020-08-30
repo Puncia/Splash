@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -55,7 +54,7 @@ namespace Splash
             commands.CommandErrored += Commands_CommandErrored;
 
             /*
-                -
+                Messages handling
             */
             discord.MessageCreated += async e =>
             {
@@ -79,19 +78,29 @@ namespace Splash
 
         private static Task Discord_Ready(DSharpPlus.EventArgs.ReadyEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(LogLevel.Info, "Splash", $"Client ready", DateTime.Now);
+            e.Client.DebugLogger.LogMessage(LogLevel.Info,
+                "Splash",
+                $"Client ready",
+                DateTime.Now);
             return Task.CompletedTask;
         }
 
         private static Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "Splash", $"Command error, {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
+            e.Context.Client.DebugLogger.LogMessage(LogLevel.Error,
+                "Splash",
+                $"Command error, {e.Exception.GetType()}: {e.Exception.Message}",
+                DateTime.Now);
             return Task.CompletedTask;
         }
 
         private static Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Info, "Splash", $"{e.Context.User.Username} successfully executed '{e.Command.QualifiedName}'", DateTime.Now);
+            e.Context.Client.DebugLogger.LogMessage(LogLevel.Info,
+                "Splash",
+                $"{e.Context.User.Username} executed '{e.Command.QualifiedName}' [{e.Context.Message.Content}]",
+                DateTime.Now);
+
             return Task.CompletedTask;
         }
     }
