@@ -1,24 +1,28 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 
 namespace Splash
 {
     public class Commands
     {
         [Command("add"), Description("Adds user to specified role.")]
-        public async Task AddToRole(CommandContext ctx, [Description("What to add")] string type, [Description("Role the user wants to be added to")] string role)
+        public async Task AddToRole(CommandContext ctx, [Description("What to add")] string type, [Description("Item to add")] string item)
         {
             switch (type)
             {
                 case "role":
-                    role = role.ToLower();
+                    item = item.ToLower();
 
                     //Allowed roles
                     //TODO: handle these in a config file
-                    if (role != "osu!" && role != "tournament" && role != "multi")
+                    if (item != "osu!" && item != "tournament" && item != "multi")
                     {
-                        await ctx.Channel.SendMessageAsync($"Il ruolo {role} non ti può essere assegnato");
+                        await ctx.Channel.SendMessageAsync($"Il ruolo {item} non ti può essere assegnato");
                         return;
                     }
 
@@ -26,16 +30,16 @@ namespace Splash
                     //TODO: check if user already has the specified role. In that case, throw an error
                     for (int i = 0; i < ctx.Guild.Roles.Count; i++)
                     {
-                        if (ctx.Guild.Roles[i].Name == role)
+                        if (ctx.Guild.Roles[i].Name == item)
                         {
                             //TODO: specify in config file role/channel relationships
-                            if ((role == "osu!" && ctx.Channel.Name == "welcome") ||
-                                (role == "tournament" || role == "multi") && ctx.Channel.Name == "role-assignment")
+                            if ((item == "osu!" && ctx.Channel.Name == "welcome") ||
+                                (item == "tournament" || item == "multi") && ctx.Channel.Name == "role-assignment")
                             {
                                 await ctx.Guild.GrantRoleAsync(ctx.Member, ctx.Guild.Roles[i]);
 
                                 //Deletes user's message upon completion
-                                await ctx.Message.DeleteAsync($"Role {role} assigned.");
+                                await ctx.Message.DeleteAsync($"Role {item} assigned.");
                             }
                             else
                             {
@@ -45,6 +49,20 @@ namespace Splash
                     }
                     break;
 
+                case "stream":
+                case "twitch":
+
+                    if (ctx.Member.Roles.Contains(ctx.Guild.Roles.First(role => role.Permissions.HasPermission(Permissions.Administrator))) &&
+                        ctx.Channel.Name == "twitch")
+                    {
+                        if (item != string.Empty)
+                        {
+                            Config.SetNewStreamMonitor(item);
+                            await ctx.Message.DeleteAsync();
+                        }
+                    }
+
+                    break;
                 default:
                     break;
             }

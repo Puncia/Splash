@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -14,9 +13,6 @@ namespace Splash
         static CommandsNextModule commands;
         static InteractivityModule interactivity;
 
-        private static string _token = "";
-        private static string _token_file = "token.key";
-
         static void Main(string[] args)
         {
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -24,26 +20,29 @@ namespace Splash
 
         static async Task MainAsync(string[] args)
         {
-            if (File.Exists(_token_file))
-                _token = File.ReadAllText(_token_file);
+            Config.Init();
+            var token = Config.GetDiscordToken();
+
+            if (token != string.Empty)
+            {
+                discord = new DiscordClient(new DiscordConfiguration
+                {
+                    Token = token,
+                    TokenType = TokenType.Bot,
+
+                    AutoReconnect = true,
+                    UseInternalLogHandler = true,
+                    LogLevel = LogLevel.Debug
+                });
+            }
             else
                 return;
-
-            discord = new DiscordClient(new DiscordConfiguration
-            {
-                Token = _token,
-                TokenType = TokenType.Bot,
-
-                AutoReconnect = true,
-                UseInternalLogHandler = true,
-                LogLevel = LogLevel.Debug
-            });
 
             discord.Ready += Discord_Ready;
 
             /*
-                Commands
-            */
+             *  Commands
+             */
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefix = "--"
@@ -54,8 +53,8 @@ namespace Splash
             commands.CommandErrored += Commands_CommandErrored;
 
             /*
-                Messages handling
-            */
+             *  Message Handling
+             */
             discord.MessageCreated += async e =>
             {
                 if (e.Message.MentionedUsers.Contains(discord.CurrentUser))
@@ -63,14 +62,19 @@ namespace Splash
             };
 
             /*
-                Interactivity
-            */
+             *  Interactivity
+             */
             interactivity = discord.UseInteractivity(new InteractivityConfiguration
             {
                 PaginationBehaviour = TimeoutBehaviour.Ignore,
                 PaginationTimeout = TimeSpan.FromMinutes(5),
                 Timeout = TimeSpan.FromMinutes(2)
             });
+
+            /*
+             *  Twitch
+             */
+            await TwitchManager.Init();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
