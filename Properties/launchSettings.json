@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Splash": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
