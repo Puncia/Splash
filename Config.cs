@@ -1,39 +1,32 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
-namespace Splash
+namespace Splash.Configs
 {
-    static class Config
+    public class Config
     {
-        static IConfigurationRoot config;
-        public static void Init()
-        {
-            config = new ConfigurationBuilder()
-                .AddJsonFile("config.json").Build();
-        }
+        public Discord discord { get; set; }
+        public Twitch twitch { get; set; }
+    }
 
-        public static string GetDiscordToken()
-        {
-            return config["discord:token"];
-        }
-        public static List<string> GetTwitchAuth()
-        {
-            var auth = new List<string>();
-            auth.Add(config["twitch:authentication:client_id"]);
-            auth.Add(config["twitch:authentication:client_secret"]);
+    public class Discord
+    {
+        public string token { get; set; }
+    }
 
-            return auth;
-        }
+    public class Twitch
+    {
+        public Authentication authentication { get; set; }
+        public StreamMonitor streamMonitor { get; set; }
+    }
 
-        public static List<string> GetTwitchMonitoredChannels()
-        {
-            return config.GetSection("twitch:stream_monitor").GetChildren().ToArray().Select(c => c.Value).ToList();
-        }
+    public class Authentication
+    {
+        public string client_id { get; set; }
+        public string client_secret { get; set; }
+    }
 
-        public static void SetNewStreamMonitor(string channel)
-        {
-            config["stream_monitor"] += channel;
-        }
+    public class StreamMonitor
+    {
+        public IList<string> streams { get; set; }
     }
 }

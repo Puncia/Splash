@@ -14,7 +14,7 @@ namespace Splash
 
         public async static Task Init()
         {
-            var keypair = Config.GetTwitchAuth();
+            var keypair = ConfigParser.GetTwitchAuth();
             twitchApi = new TwitchApiBuilder(keypair[0]).
                 WithClientSecret(keypair[1]).
                 Build();
@@ -26,7 +26,7 @@ namespace Splash
 
         private static void LiveCheckTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            twitchApi.GetStreamsWithUserLogins(Config.GetTwitchMonitoredChannels().ToArray());
+            twitchApi.GetStreamsWithUserLogins(ConfigParser.GetTwitchMonitoredChannels().ToArray());
 
 
         }

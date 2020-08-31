@@ -52,12 +52,12 @@ namespace Splash
                 case "stream":
                 case "twitch":
 
-                    if (ctx.Member.Roles.Contains(ctx.Guild.Roles.First(role => role.Permissions.HasPermission(Permissions.Administrator))) &&
+                    if (ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) &&
                         ctx.Channel.Name == "twitch")
                     {
                         if (item != string.Empty)
                         {
-                            Config.SetNewStreamMonitor(item);
+                            ConfigParser.SetNewStreamMonitor(item);
                             await ctx.Message.DeleteAsync();
                         }
                     }
