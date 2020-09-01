@@ -57,7 +57,7 @@ namespace Splash
                     {
                         if (item != string.Empty)
                         {
-                            ConfigParser.SetNewStreamMonitor(item);
+                            ConfigManager.SetNewStreamMonitor(item);
                             await ctx.Message.DeleteAsync();
                         }
                     }

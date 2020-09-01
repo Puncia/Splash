@@ -6,7 +6,7 @@ using Splash.Configs;
 
 namespace Splash
 {
-    static class ConfigParser
+    static class ConfigManager
     {
         const string configFile = "config.json";
         static Config configs;
@@ -33,7 +33,7 @@ namespace Splash
             else
                 return;
         }
-
+        
         public static void SaveSettings(string s)
         {
             if(File.Exists(configFile))

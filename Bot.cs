@@ -20,8 +20,8 @@ namespace Splash
 
         static async Task MainAsync(string[] args)
         {
-            ConfigParser.Init();
-            var token = ConfigParser.GetDiscordToken();
+            ConfigManager.Init();
+            var token = ConfigManager.GetDiscordToken();
 
             if (token != string.Empty)
             {
