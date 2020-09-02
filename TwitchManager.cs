@@ -18,17 +18,19 @@ namespace Splash
                 WithClientSecret(keypair[1]).
                 Build();
 
-            LiveCheckTimer = new Timer(15000); //3 minutes = 180000; TODO: put this in config.json
+            LiveCheckTimer = new Timer(5000); //3 minutes = 180000; TODO: put this in config.json
             LiveCheckTimer.Elapsed += LiveCheckTimer_Elapsed;
             LiveCheckTimer.Enabled = true;
         }
 
         private static async void LiveCheckTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var c = ConfigManager.GetTwitchMonitoredChannels()?.Keys.ToArray();
-            if (c != null)
+            Bot.Log("Checking live Twitch channels");
+
+            var c = ConfigManager.GetTwitchMonitoredChannels();
+            if (c != null && c.Count > 0)
             {
-                var helixResponse = await twitchApi.GetStreamsWithUserLogins(c);
+                var helixResponse = await twitchApi.GetStreamsWithUserLogins(c.Select(ORCO_PUZZONE => ORCO_PUZZONE.twitchChannel).ToArray());
 
                 foreach (HelixStream hstream in helixResponse.Data)
                 {

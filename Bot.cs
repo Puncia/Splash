@@ -1,8 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
+using Splash.Configs;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace Splash
         static CommandsNextModule commands;
         static InteractivityModule interactivity;
 
-        public delegate void StreamerLiveEventHandler(string channel);
+        public delegate void StreamerLiveEventHandler(string twitchChannel);
         public static event StreamerLiveEventHandler StreamerLive;
 
         public enum SplashLogLevel
@@ -128,56 +128,57 @@ namespace Splash
             return Task.CompletedTask;
         }
 
-        public static void OnStreamerLive(string stream)
+        public static void OnStreamerLive(string twitchChannel)
         {
-            StreamerLive?.Invoke(stream);
+            StreamerLive?.Invoke(twitchChannel);
         }
-        private static void Bot_StreamerLive(string channel)
+        private static void Bot_StreamerLive(string twitchChannel)
         {
+            Log($"Streamer live event triggered for '{twitchChannel}'..", newLine: false);
+
             var monitoredChannels = ConfigManager.GetTwitchMonitoredChannels();
 
-            if (monitoredChannels != null)
+            Log($"found {monitoredChannels.Select(d => d.ChannelID).Distinct().Count()} discord channels matches", header: false);
+
+            foreach (MonitoredChannel mc in monitoredChannels)
             {
-                foreach (KeyValuePair<string, ulong> c in monitoredChannels)
+                if (mc.twitchChannel.ToLower() == twitchChannel.ToLower())
                 {
-                    if (c.Key == channel)
-                    {
-                        //TODO: fix this with custom channel names
-                        discord.GetGuildAsync(c.Value).Result.Channels.First(c => c.Name == "twitch").SendMessageAsync($"{channel} è live!");
-                    }
+                    discord.GetGuildAsync(mc.GuildID).Result.GetChannel(mc.ChannelID).SendMessageAsync($"{twitchChannel} è live!");
                 }
             }
         }
 
-        public static void Log(string message, [CallerMemberName] string callerName = "")
-        {
-            Log(message, SplashLogLevel.Info, callerName);
-        }
-
-        public static void Log(string message, SplashLogLevel logLevel, [CallerMemberName] string callerName = "")
+        public static void Log(string message, SplashLogLevel logLevel = SplashLogLevel.Info, [CallerMemberName] string callerName = "", bool newLine = true, bool header = true)
         {
             var date = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss K]")}";
             callerName = $"[{callerName}]";
+
+            var str_header = header ? $"{date} {callerName}" : "";
+            ConsoleColor cc = new ConsoleColor();
+
             switch (logLevel)
             {
                 case SplashLogLevel.Info:
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"{date} {callerName} [Info]");
-                    Console.ResetColor();
+                    cc = ConsoleColor.Cyan;
+                    str_header += header ? " [Info]" : "";
                     break;
                 case SplashLogLevel.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"{date} {callerName} [Warning]");
-                    Console.ResetColor();
+                    cc = ConsoleColor.Yellow;
+                    str_header += header ? " [Warning]" : "";
                     break;
                 case SplashLogLevel.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"{date} {callerName} [Error]");
-                    Console.ResetColor();
+                    cc = ConsoleColor.Red;
+                    str_header += header ? " [Error]" : "";
+
                     break;
                 default:
                     break;
             }
+            Console.ForegroundColor = cc;
+            Console.Write($"{str_header} {message}");
+            Console.ResetColor();
+            Console.Write(newLine ? Environment.NewLine : "");
         }
     }
 }

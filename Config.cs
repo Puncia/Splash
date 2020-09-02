@@ -27,12 +27,12 @@ namespace Splash.Configs
 
     public class StreamMonitor
     {
-        public IList<MonitoredChannels> monitoredChannels { get; set; }
+        public IList<MonitoredChannel> monitoredChannels { get; set; }
     }
 
-    public class MonitoredChannels
+    public class MonitoredChannel
     {
-        public MonitoredChannels(string twitchChannel, ulong GuildID, ulong ChannelID)
+        public MonitoredChannel(string twitchChannel, ulong GuildID, ulong ChannelID)
         {
             this.twitchChannel = twitchChannel;
             this.GuildID = GuildID;
