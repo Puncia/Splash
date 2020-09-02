@@ -1,9 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Splash
 {
@@ -12,6 +13,9 @@ namespace Splash
         static DiscordClient discord;
         static CommandsNextModule commands;
         static InteractivityModule interactivity;
+
+        public delegate void StreamerLiveEventHandler(string channel);
+        public static event StreamerLiveEventHandler StreamerLive;
 
         static void Main(string[] args)
         {
@@ -36,7 +40,9 @@ namespace Splash
                 });
             }
             else
+            {
                 return;
+            }
 
             discord.Ready += Discord_Ready;
 
@@ -58,7 +64,9 @@ namespace Splash
             discord.MessageCreated += async e =>
             {
                 if (e.Message.MentionedUsers.Contains(discord.CurrentUser))
+                {
                     await e.Message.RespondAsync(e.Message.Author.Mention);
+                }
             };
 
             /*
@@ -75,10 +83,12 @@ namespace Splash
              *  Twitch
              */
             await TwitchManager.Init();
+            StreamerLive += Bot_StreamerLive;
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
         }
+
 
         private static Task Discord_Ready(DSharpPlus.EventArgs.ReadyEventArgs e)
         {
@@ -106,6 +116,27 @@ namespace Splash
                 DateTime.Now);
 
             return Task.CompletedTask;
+        }
+
+        public static void OnStreamerLive(string stream)
+        {
+            StreamerLive?.Invoke(stream);
+        }
+        private static void Bot_StreamerLive(string channel)
+        {
+            var monitoredChannels = ConfigManager.GetTwitchMonitoredChannels();
+
+            if (monitoredChannels != null)
+            {
+                foreach (KeyValuePair<string, ulong> c in monitoredChannels)
+                {
+                    if (c.Key == channel)
+                    {
+                        //TODO: fix this with custom channel names
+                        discord.GetGuildAsync(c.Value).Result.Channels.First(c => c.Name == "twitch").SendMessageAsync($"{channel} è live!");
+                    }
+                }
+            }
         }
     }
 }

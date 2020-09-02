@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 
 namespace Splash.Configs
 {
@@ -27,6 +28,19 @@ namespace Splash.Configs
 
     public class StreamMonitor
     {
-        public IList<string> streams { get; set; }
+        public IList<MonitoredChannels> monitoredChannels { get; set; }
+    }
+
+    public class MonitoredChannels
+    {
+        public MonitoredChannels(string twitchChannel, ulong GuildID, ulong ChannelID)
+        {
+            this.twitchChannel = twitchChannel;
+            this.GuildID = GuildID;
+            this.ChannelID = ChannelID;
+        }
+        public string twitchChannel { get; set; }
+        public ulong GuildID { get; set; }
+        public ulong ChannelID { get; set; }
     }
 }

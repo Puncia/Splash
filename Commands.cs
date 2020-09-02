@@ -1,10 +1,7 @@
-﻿using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+using System.Threading.Tasks;
 
 namespace Splash
 {
@@ -57,8 +54,14 @@ namespace Splash
                     {
                         if (item != string.Empty)
                         {
-                            ConfigManager.SetNewStreamMonitor(item);
-                            await ctx.Message.DeleteAsync();
+                            if (ConfigManager.SetNewStreamMonitor(item, ctx.Guild.Id, ctx.Channel.Id))
+                            {
+                                await ctx.Message.DeleteAsync();
+                            }
+                            else
+                            {
+                                await ctx.Channel.SendMessageAsync($"Impossibile aggiungere lo stream {item} (forse è già stato aggiunto?)");
+                            }                            
                         }
                     }
 

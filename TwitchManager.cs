@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Twitch.Net;
-using Twitch.Net.Response;
+using Twitch.Net.Models;
 
 namespace Splash
 {
@@ -19,16 +18,23 @@ namespace Splash
                 WithClientSecret(keypair[1]).
                 Build();
 
-            LiveCheckTimer = new Timer(180000);
+            LiveCheckTimer = new Timer(180000); //3 minutes = 180000; TODO: put this in config.json
             LiveCheckTimer.Elapsed += LiveCheckTimer_Elapsed;
             LiveCheckTimer.Enabled = true;
         }
 
-        private static void LiveCheckTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private static async void LiveCheckTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            twitchApi.GetStreamsWithUserLogins(ConfigManager.GetTwitchMonitoredChannels().ToArray());
+            var c = ConfigManager.GetTwitchMonitoredChannels()?.Keys.ToArray();
+            if (c != null)
+            {
+                var helixResponse = await twitchApi.GetStreamsWithUserLogins(c);
 
-
+                foreach (HelixStream hstream in helixResponse.Data)
+                {
+                    Bot.OnStreamerLive(hstream.UserName);
+                }
+            }
         }
     }
 }

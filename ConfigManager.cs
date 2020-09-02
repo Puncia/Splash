@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using Splash.Configs;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Splash
 {
@@ -11,15 +11,21 @@ namespace Splash
         const string configFile = "config.json";
         static Config configs;
 
+        public delegate void StreamAddedEventHandler(string stream);
+        public static event StreamAddedEventHandler StreamAdded;
+
         public static void Init()
         {
             configs = new Config();
-            configs.discord = new Configs.Discord();
-            configs.twitch = new Configs.Twitch();
-            configs.twitch.authentication = new Configs.Authentication();
-            configs.twitch.streamMonitor = new Configs.StreamMonitor();
+
+            StreamAdded += ConfigManager_StreamAdded;
 
             LoadSettings();
+        }
+
+        private static void ConfigManager_StreamAdded(string stream)
+        {
+            SaveSettings(JsonConvert.SerializeObject(configs));
         }
 
         public static void LoadSettings()
@@ -31,12 +37,14 @@ namespace Splash
                 configs = JsonConvert.DeserializeObject<Config>(json);
             }
             else
+            {
                 return;
+            }
         }
-        
+
         public static void SaveSettings(string s)
         {
-            if(File.Exists(configFile))
+            if (File.Exists(configFile))
             {
                 File.WriteAllText(configFile, s);
             }
@@ -51,15 +59,55 @@ namespace Splash
             return new List<string>() { configs.twitch.authentication.client_id, configs.twitch.authentication.client_secret };
         }
 
-        public static List<string> GetTwitchMonitoredChannels()
+        public static Dictionary<string, ulong> GetTwitchMonitoredChannels()
         {
-            return new List<string>(configs.twitch.streamMonitor.streams.ToList());
+            Dictionary<string, ulong> l = new Dictionary<string, ulong>();
+            if (l.Count == 0)
+            {
+                return null;
+            }
+
+            foreach (MonitoredChannels monitored in configs.twitch.streamMonitor.monitoredChannels)
+            {
+                l.Add(monitored.twitchChannel, monitored.GuildID);
+            }
+            return l;
         }
 
-        public static void SetNewStreamMonitor(string channel)
+        public static bool SetNewStreamMonitor(string twitchChannel, ulong GuildID, ulong ChannelID)
         {
-            configs.twitch.streamMonitor.streams.Add(channel);
-            SaveSettings(JsonConvert.SerializeObject(configs));
+            //in case our config.json list is empty; maybe should initialize it somewhere else
+            if (configs.twitch.streamMonitor.monitoredChannels == null)
+            {
+                configs.twitch.streamMonitor.monitoredChannels = new List<MonitoredChannels>();
+
+                //we can safely add the stream since we know for sure it's not there
+                configs.twitch.streamMonitor.monitoredChannels.Add(new MonitoredChannels(twitchChannel, GuildID, ChannelID));
+                StreamAdded?.Invoke(twitchChannel);
+
+                return true;
+            }
+
+            //we iterate through the list of GuidIDs
+            bool newItem = true;
+            foreach (MonitoredChannels mc in configs.twitch.streamMonitor.monitoredChannels.Where(c => c.GuildID == GuildID))
+            {
+                //do we find our channel?
+                if (mc.twitchChannel == twitchChannel)
+                {
+                    newItem = false;
+                }
+            }
+
+            if(newItem)
+            {
+                configs.twitch.streamMonitor.monitoredChannels.Add(new MonitoredChannels(twitchChannel, GuildID, ChannelID));
+                StreamAdded?.Invoke(twitchChannel);
+
+                return true;
+            }
+
+            return false;
         }
     }
 }
