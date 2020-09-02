@@ -4,18 +4,26 @@ using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Splash
 {
     class Bot
     {
-        static DiscordClient discord;
+        public static DiscordClient discord;
         static CommandsNextModule commands;
         static InteractivityModule interactivity;
 
         public delegate void StreamerLiveEventHandler(string channel);
         public static event StreamerLiveEventHandler StreamerLive;
+
+        public enum SplashLogLevel
+        {
+            Info,
+            Warning,
+            Error
+        }
 
         static void Main(string[] args)
         {
@@ -24,6 +32,8 @@ namespace Splash
 
         static async Task MainAsync(string[] args)
         {
+            Log("Initializing..");
+
             ConfigManager.Init();
             var token = ConfigManager.GetDiscordToken();
 
@@ -36,7 +46,7 @@ namespace Splash
 
                     AutoReconnect = true,
                     UseInternalLogHandler = true,
-                    LogLevel = LogLevel.Debug
+                    LogLevel = DSharpPlus.LogLevel.Debug
                 });
             }
             else
@@ -92,7 +102,7 @@ namespace Splash
 
         private static Task Discord_Ready(DSharpPlus.EventArgs.ReadyEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(LogLevel.Info,
+            e.Client.DebugLogger.LogMessage(DSharpPlus.LogLevel.Info,
                 "Splash",
                 $"Client ready",
                 DateTime.Now);
@@ -101,7 +111,7 @@ namespace Splash
 
         private static Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Error,
+            e.Context.Client.DebugLogger.LogMessage(DSharpPlus.LogLevel.Error,
                 "Splash",
                 $"Command error, {e.Exception.GetType()}: {e.Exception.Message}",
                 DateTime.Now);
@@ -110,7 +120,7 @@ namespace Splash
 
         private static Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Info,
+            e.Context.Client.DebugLogger.LogMessage(DSharpPlus.LogLevel.Info,
                 "Splash",
                 $"{e.Context.User.Username} executed '{e.Command.QualifiedName}' [{e.Context.Message.Content}]",
                 DateTime.Now);
@@ -136,6 +146,37 @@ namespace Splash
                         discord.GetGuildAsync(c.Value).Result.Channels.First(c => c.Name == "twitch").SendMessageAsync($"{channel} è live!");
                     }
                 }
+            }
+        }
+
+        public static void Log(string message, [CallerMemberName] string callerName = "")
+        {
+            Log(message, SplashLogLevel.Info, callerName);
+        }
+
+        public static void Log(string message, SplashLogLevel logLevel, [CallerMemberName] string callerName = "")
+        {
+            var date = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss K]")}";
+            callerName = $"[{callerName}]";
+            switch (logLevel)
+            {
+                case SplashLogLevel.Info:
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"{date} {callerName} [Info]");
+                    Console.ResetColor();
+                    break;
+                case SplashLogLevel.Warning:
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"{date} {callerName} [Warning]");
+                    Console.ResetColor();
+                    break;
+                case SplashLogLevel.Error:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"{date} {callerName} [Error]");
+                    Console.ResetColor();
+                    break;
+                default:
+                    break;
             }
         }
     }

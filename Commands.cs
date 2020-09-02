@@ -61,7 +61,7 @@ namespace Splash
                             else
                             {
                                 await ctx.Channel.SendMessageAsync($"Impossibile aggiungere lo stream {item} (forse è già stato aggiunto?)");
-                            }                            
+                            }
                         }
                     }
 

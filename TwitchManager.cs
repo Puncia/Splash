@@ -18,7 +18,7 @@ namespace Splash
                 WithClientSecret(keypair[1]).
                 Build();
 
-            LiveCheckTimer = new Timer(180000); //3 minutes = 180000; TODO: put this in config.json
+            LiveCheckTimer = new Timer(15000); //3 minutes = 180000; TODO: put this in config.json
             LiveCheckTimer.Elapsed += LiveCheckTimer_Elapsed;
             LiveCheckTimer.Enabled = true;
         }

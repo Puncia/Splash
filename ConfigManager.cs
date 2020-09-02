@@ -99,7 +99,7 @@ namespace Splash
                 }
             }
 
-            if(newItem)
+            if (newItem)
             {
                 configs.twitch.streamMonitor.monitoredChannels.Add(new MonitoredChannels(twitchChannel, GuildID, ChannelID));
                 StreamAdded?.Invoke(twitchChannel);
