@@ -80,6 +80,13 @@ namespace Splash
 
                     item = item.ToLower();
 
+                    if(item == "member")
+                    {
+                        Bot.Log($"{ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator} tried to remove role {item}", LogLevel: Bot.LogLevel.Warning);
+                        await ctx.Channel.SendMessageAsync("Non puoi rimuovere il ruolo Member");
+                        return;
+                    }
+
                     if (ctx.Member.Roles.Where(r => r.Name.ToLower() == item).Count() > 0)
                     {
                         Bot.Log($"Found and removing {item} role from {ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator}");
