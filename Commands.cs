@@ -1,8 +1,12 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using Microsoft.VisualBasic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Splash
@@ -100,6 +104,26 @@ namespace Splash
                     break;
                 default:
                     break;
+            }
+        }
+
+        [Command("prune"), Description("Removes #N messages from the channel")]
+        public async Task Prune(CommandContext ctx, int N)
+        {
+            if(ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator))
+            {
+                //we increment this because we also want to delete the command
+                if(N++ > 0)
+                {
+                    Bot.Log($"Deleting {N} messages from {ctx.Channel.Name}", LogLevel: Bot.LogLevel.Warning);
+
+                    var msgList = ctx.Channel.GetMessagesAsync(N).Result;
+                    foreach(DiscordMessage message in msgList)
+                    {
+                        await message.DeleteAsync();
+                        Thread.Sleep(750);
+                    }
+                }
             }
         }
     }
