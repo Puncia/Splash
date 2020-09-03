@@ -34,9 +34,6 @@ namespace Splash
                                 (item == "tournaments" || item == "multi") && ctx.Channel.Name == "role-assignment")
                             {
                                 await ctx.Guild.GrantRoleAsync(ctx.Member, ctx.Guild.Roles[i]);
-
-                                //Deletes user's message upon completion
-                                await ctx.Message.DeleteAsync($"Role {item} assigned.");
                             }
                             else
                             {
@@ -44,6 +41,7 @@ namespace Splash
                             }
                         }
                     }
+
                     break;
 
                 case "stream":

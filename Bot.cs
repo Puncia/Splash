@@ -77,6 +77,13 @@ namespace Splash
                 {
                     await e.Message.RespondAsync(e.Message.Author.Mention);
                 }
+                
+                //delete message if it's in #role-assignment
+                if (e.Channel.Name == "role-assignment")
+                {
+                    Bot.Log($"Deleting message in #role-assignment: [{e.Author}] {e.Message}");
+                    await e.Message.DeleteAsync();
+                }
             };
 
             /*
