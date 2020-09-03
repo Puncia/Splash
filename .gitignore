@@ -341,3 +341,5 @@ healthchecksdb
 
 # Local config.json file
 config.json
+
+.vscode
