@@ -36,7 +36,6 @@ namespace Splash
                             {
                                 Bot.Log($"Granting role {item} to {ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator}");
                                 await ctx.Guild.GrantRoleAsync(ctx.Member, ctx.Guild.Roles[i]);
-                                await ctx.Message.DeleteAsync();
                             }
                             else
                             {
