@@ -5,6 +5,7 @@ using Splash.Configs;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Splash
@@ -18,7 +19,9 @@ namespace Splash
         public delegate void StreamerLiveEventHandler(string twitchChannel);
         public static event StreamerLiveEventHandler StreamerLive;
 
-        public enum SplashLogLevel
+        static Mutex logMutex;
+
+        public enum LogLevel
         {
             Info,
             Warning,
@@ -32,7 +35,8 @@ namespace Splash
 
         static async Task MainAsync(string[] args)
         {
-            Log("Initializing..");
+            logMutex = new Mutex();
+            Log("Initializing..", NewLine: false);
 
             ConfigManager.Init();
             var token = ConfigManager.GetDiscordToken();
@@ -46,7 +50,7 @@ namespace Splash
 
                     AutoReconnect = true,
                     UseInternalLogHandler = true,
-                    LogLevel = DSharpPlus.LogLevel.Debug
+                    LogLevel = DSharpPlus.LogLevel.Error
                 });
             }
             else
@@ -75,13 +79,14 @@ namespace Splash
             {
                 if (e.Message.MentionedUsers.Contains(discord.CurrentUser))
                 {
-                    await e.Message.RespondAsync(e.Message.Author.Mention);
+                    Bot.Log($"{e.Author.Username}#{e.Author.Discriminator} mentioned me");
+                    await e.Message.RespondAsync(e.Author.Mention);
                 }
                 
                 //delete message if it's in #role-assignment
                 if (e.Channel.Name == "role-assignment")
                 {
-                    Bot.Log($"Deleting message in #role-assignment: [{e.Author}] {e.Message}");
+                    Bot.Log($"Deleting message in #role-assignment: [{e.Author.Username}#{e.Author.Discriminator}] {e.Message.Content}");
                     await e.Message.DeleteAsync();
                 }
             };
@@ -109,6 +114,8 @@ namespace Splash
 
         private static Task Discord_Ready(DSharpPlus.EventArgs.ReadyEventArgs e)
         {
+            Log("ready", Header: false);
+
             e.Client.DebugLogger.LogMessage(DSharpPlus.LogLevel.Info,
                 "Splash",
                 $"Client ready",
@@ -156,36 +163,38 @@ namespace Splash
             //}
         }
 
-        public static void Log(string message, SplashLogLevel logLevel = SplashLogLevel.Info, [CallerMemberName] string callerName = "", bool newLine = true, bool header = true)
+        public static void Log(string Message, LogLevel LogLevel = LogLevel.Info, [CallerMemberName] string CallerName = "",  bool NewLine = true, bool Header = true)
         {
+            logMutex.WaitOne();
             var date = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss K]")}";
-            callerName = $"[{callerName}]";
+            CallerName = $"[{CallerName}]";
 
-            var str_header = header ? $"{date} {callerName}" : "";
+            var str_header = Header ? $"{date} {CallerName}" : "";
             ConsoleColor cc = new ConsoleColor();
 
-            switch (logLevel)
+            switch (LogLevel)
             {
-                case SplashLogLevel.Info:
-                    cc = ConsoleColor.Cyan;
-                    str_header += header ? " [Info]" : "";
+                case LogLevel.Info:
+                    cc = ConsoleColor.White;
+                    str_header += Header ? " [Info] " : "";
                     break;
-                case SplashLogLevel.Warning:
+                case LogLevel.Warning:
                     cc = ConsoleColor.Yellow;
-                    str_header += header ? " [Warning]" : "";
+                    str_header += Header ? " [Warning] " : "";
                     break;
-                case SplashLogLevel.Error:
+                case LogLevel.Error:
                     cc = ConsoleColor.Red;
-                    str_header += header ? " [Error]" : "";
+                    str_header += Header ? " [Error] " : "";
 
                     break;
                 default:
                     break;
             }
             Console.ForegroundColor = cc;
-            Console.Write($"{str_header} {message}");
+            Console.Write($"{str_header}{Message}");
             Console.ResetColor();
-            Console.Write(newLine ? Environment.NewLine : "");
+            Console.Write(NewLine ? Environment.NewLine : "");
+            logMutex.ReleaseMutex();
         }
     }
 }
