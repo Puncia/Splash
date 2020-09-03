@@ -4,42 +4,47 @@ namespace Splash.Configs
 {
     public class Config
     {
-        public Discord discord { get; set; }
-        public Twitch twitch { get; set; }
+        public Discord Discord { get; set; }
+        public Twitch Twitch { get; set; }
     }
 
     public class Discord
     {
-        public string token { get; set; }
+        public string Token { get; set; }
     }
 
     public class Twitch
     {
-        public Authentication authentication { get; set; }
-        public StreamMonitor streamMonitor { get; set; }
+        public Authentication Authentication { get; set; }
+        public StreamMonitor StreamMonitor { get; set; }
     }
 
     public class Authentication
     {
-        public string client_id { get; set; }
-        public string client_secret { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
     }
 
     public class StreamMonitor
     {
-        public IList<MonitoredChannel> monitoredChannels { get; set; }
+        public IList<MonitoredChannel> MonitoredChannels { get; set; }
+        public IList<GuildPreference> GuildPreferences { get; set; }
     }
 
     public class MonitoredChannel
     {
-        public MonitoredChannel(string twitchChannel, ulong GuildID, ulong ChannelID)
+        public MonitoredChannel(string twitchChannel)
         {
-            this.twitchChannel = twitchChannel;
-            this.GuildID = GuildID;
-            this.ChannelID = ChannelID;
+            this.TwitchChannel = twitchChannel;
+            this.Live = false;
         }
-        public string twitchChannel { get; set; }
+
+        public string TwitchChannel { get; set; }
+        public bool Live { get; set; }
+    }
+    public class GuildPreference
+    {
         public ulong GuildID { get; set; }
-        public ulong ChannelID { get; set; }
+        public ulong TwitchNotificationChannelID { get; set; }
     }
 }

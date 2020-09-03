@@ -134,19 +134,19 @@ namespace Splash
         }
         private static void Bot_StreamerLive(string twitchChannel)
         {
-            Log($"Streamer live event triggered for '{twitchChannel}'..", newLine: false);
+            //Log($"Streamer live event triggered for '{twitchChannel}'..", newLine: false);
 
-            var monitoredChannels = ConfigManager.GetTwitchMonitoredChannels();
+            //var monitoredChannels = ConfigManager.GetTwitchMonitoredChannels();
 
-            Log($"found {monitoredChannels.Select(d => d.ChannelID).Distinct().Count()} discord channels matches", header: false);
+            //Log($"found {monitoredChannels.Select(d => d.ChannelID).Distinct().Count()} discord channels matches", header: false);
 
-            foreach (MonitoredChannel mc in monitoredChannels)
-            {
-                if (mc.twitchChannel.ToLower() == twitchChannel.ToLower())
-                {
-                    discord.GetGuildAsync(mc.GuildID).Result.GetChannel(mc.ChannelID).SendMessageAsync($"{twitchChannel} è live!");
-                }
-            }
+            //foreach (MonitoredChannel mc in monitoredChannels)
+            //{
+            //    if (mc.TwitchChannel.ToLower() == twitchChannel.ToLower())
+            //    {
+            //        discord.GetGuildAsync(mc.GuildID).Result.GetChannel(mc.ChannelID).SendMessageAsync($"{twitchChannel} è live!");
+            //    }
+            //}
         }
 
         public static void Log(string message, SplashLogLevel logLevel = SplashLogLevel.Info, [CallerMemberName] string callerName = "", bool newLine = true, bool header = true)
