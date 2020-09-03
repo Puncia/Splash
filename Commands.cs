@@ -31,7 +31,8 @@ namespace Splash
                         if (ctx.Guild.Roles[i].Name.ToLower() == item)
                         {
                             //TODO: specify in config file role/channel relationships
-                            if ((item == "member" && ctx.Channel.Name == "welcome") || item == "tournaments" || item == "multi")
+                            if ((item == "osu!" && ctx.Channel.Name == "welcome") ||
+                                (item == "tournaments" || item == "multi") && ctx.Channel.Name == "role-assignment")
                             {
                                 Bot.Log($"Granting role {item} to {ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator}");
                                 await ctx.Guild.GrantRoleAsync(ctx.Member, ctx.Guild.Roles[i]);
