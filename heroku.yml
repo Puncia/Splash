@@ -1,6 +1,7 @@
 build:
     docker:
-        web: worker/Dockerfile
+        web: Dockerfile
 run:
-    worker: dotnet Splash.dll
-    image: splash
+    worker:
+        command: dotnet Splash.dll
+        image: splash
