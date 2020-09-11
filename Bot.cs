@@ -53,7 +53,7 @@ namespace Splash
 
                     AutoReconnect = true,
                     UseInternalLogHandler = true,
-                    LogLevel = DSharpPlus.LogLevel.Error
+                    LogLevel = DSharpPlus.LogLevel.Debug
                 });
             }
             else
