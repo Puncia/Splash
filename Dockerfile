@@ -17,4 +17,4 @@ RUN dotnet publish "Splash.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Splash.dll"]
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet Splash.dll
