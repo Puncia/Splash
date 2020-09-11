@@ -3,5 +3,6 @@ build:
         web: Dockerfile
 run:
     worker:
-        command: dotnet Splash.dll
+        command: 
+            - dotnet Splash.dll
         image: splash
