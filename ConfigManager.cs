@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Splash.Configs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -53,7 +54,8 @@ namespace Splash
 
         public static string GetDiscordToken()
         {
-            return configs.Discord.Token;
+            //return configs.Discord.Token;
+            return Environment.GetEnvironmentVariable("Token");
         }
         public static List<string> GetTwitchAuth()
         {
