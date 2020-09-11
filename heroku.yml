@@ -3,3 +3,4 @@ build:
         web: worker/Dockerfile
 run:
     worker: dotnet Splash.dll
+    image: splash
