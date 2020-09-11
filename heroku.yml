@@ -5,4 +5,4 @@ run:
     worker:
         command: 
             - dotnet Splash.dll
-        image: splash
+        image: web
