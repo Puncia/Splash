@@ -4,6 +4,8 @@ using DSharpPlus.Interactivity;
 using Splash.Configs;
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +20,7 @@ namespace Splash
 
         public delegate void StreamerLiveEventHandler(string twitchChannel);
         public static event StreamerLiveEventHandler StreamerLive;
+        static int port;
 
         static Mutex logMutex;
 
@@ -57,6 +60,10 @@ namespace Splash
             {
                 return;
             }
+
+            int.TryParse(Environment.GetEnvironmentVariable("PORT"), out port);
+            TcpListener l = new TcpListener(IPAddress.Any, port);
+            l.Start();
 
             discord.Ready += Discord_Ready;
 
@@ -115,6 +122,7 @@ namespace Splash
         private static Task Discord_Ready(DSharpPlus.EventArgs.ReadyEventArgs e)
         {
             Log("ready", Header: false);
+            Log($"port is {port}");
 
             e.Client.DebugLogger.LogMessage(DSharpPlus.LogLevel.Info,
                 "Splash",
