@@ -2,11 +2,7 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.VisualBasic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Splash

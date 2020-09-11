@@ -1,7 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
-using Splash.Configs;
 using System;
 using System.Linq;
 using System.Net;
@@ -89,7 +88,7 @@ namespace Splash
                     Bot.Log($"{e.Author.Username}#{e.Author.Discriminator} mentioned me");
                     await e.Message.RespondAsync(e.Author.Mention);
                 }
-                
+
                 //delete message if it's in #role-assignment
                 if (e.Channel.Name == "role-assignment" || e.Channel.Name == "welcome")
                 {
@@ -171,10 +170,10 @@ namespace Splash
             //}
         }
 
-        public static void Log(string Message, LogLevel LogLevel = LogLevel.Info, [CallerMemberName] string CallerName = "",  bool NewLine = true, bool Header = true)
+        public static void Log(string Message, LogLevel LogLevel = LogLevel.Info, [CallerMemberName] string CallerName = "", bool NewLine = true, bool Header = true, bool DisplayDate = false)
         {
             logMutex.WaitOne();
-            var date = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss K]")}";
+            var date = DisplayDate ? $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss K]}" : "";
             CallerName = $"[{CallerName}]";
 
             var str_header = Header ? $"{date} {CallerName}" : "";
