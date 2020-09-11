@@ -59,7 +59,8 @@ namespace Splash
         }
         public static List<string> GetTwitchAuth()
         {
-            return new List<string>() { configs.Twitch.Authentication.ClientId, configs.Twitch.Authentication.ClientSecret };
+            //return new List<string>() { configs.Twitch.Authentication.ClientId, configs.Twitch.Authentication.ClientSecret };
+            return new List<string>() { Environment.GetEnvironmentVariable("ClientID"), Environment.GetEnvironmentVariable("ClientSecret") };
         }
 
         public static List<MonitoredChannel> GetTwitchMonitoredChannels()
