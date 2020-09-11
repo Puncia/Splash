@@ -25,7 +25,7 @@ namespace Splash
                     //TODO: handle these in a config file?
                     if (item != "member" && item != "tournaments" && item != "multi")
                     {
-                        Bot.Log($"{ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator} tried to get role {item} without permission", LogLevel: Bot.LogLevel.Warning);
+                        Bot.Log($"{ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator} tried to get role {item} without permission", Bot.LogLevel.Warning);
                         return;
                     }
 
@@ -35,7 +35,7 @@ namespace Splash
                         if (ctx.Guild.Roles[i].Name.ToLower() == item)
                         {
                             //TODO: specify in config file role/channel relationships
-                            if ((item == "osu!" && ctx.Channel.Name == "welcome") ||
+                            if ((item == "member" && ctx.Channel.Name == "welcome") ||
                                 (item == "tournaments" || item == "multi") && ctx.Channel.Name == "role-assignment")
                             {
                                 Bot.Log($"Granting role {item} to {ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator}");
@@ -84,9 +84,9 @@ namespace Splash
 
                     item = item.ToLower();
 
-                    if(item == "member")
+                    if (item == "member")
                     {
-                        Bot.Log($"{ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator} tried to remove role {item}", LogLevel: Bot.LogLevel.Warning);
+                        Bot.Log($"{ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator} tried to remove role {item}", Bot.LogLevel.Warning);
                         await ctx.Channel.SendMessageAsync("Non puoi rimuovere il ruolo Member");
                         return;
                     }
@@ -98,7 +98,7 @@ namespace Splash
                     }
                     else
                     {
-                        Bot.Log($"No role {item} belonging to {ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator}", LogLevel: Bot.LogLevel.Warning);
+                        Bot.Log($"No role {item} belonging to {ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator}", Bot.LogLevel.Warning);
                     }
 
                     break;
@@ -110,18 +110,23 @@ namespace Splash
         [Command("prune"), Description("Removes #N messages from the channel")]
         public async Task Prune(CommandContext ctx, int N)
         {
-            if(ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator))
+            if (ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator))
             {
-                //we increment this because we also want to delete the command
-                if(N++ > 0)
-                {
-                    Bot.Log($"Deleting {N} messages from {ctx.Channel.Name}", LogLevel: Bot.LogLevel.Warning);
+                Bot.Log($"{ctx.Message.Author.Username}#{ctx.Message.Author.Discriminator} requested prune in {ctx.Channel.Name}", Bot.LogLevel.Warning);
 
-                    var msgList = ctx.Channel.GetMessagesAsync(N).Result;
-                    foreach(DiscordMessage message in msgList)
+                if (N++ > 0)
+                {
+                    while (N > 0)
                     {
-                        await message.DeleteAsync();
-                        Thread.Sleep(750);
+                        Bot.Log($"{N} messages to delete from {ctx.Channel.Name} remaining", Bot.LogLevel.Warning);
+
+                        var msgList = ctx.Channel.GetMessagesAsync().Result;
+                        foreach (DiscordMessage message in msgList)
+                        {
+                            await message.DeleteAsync();
+                        }
+
+                        N -= msgList.Count;
                     }
                 }
             }

@@ -84,9 +84,9 @@ namespace Splash
                 }
                 
                 //delete message if it's in #role-assignment
-                if (e.Channel.Name == "role-assignment")
+                if (e.Channel.Name == "role-assignment" || e.Channel.Name == "welcome")
                 {
-                    Bot.Log($"Deleting message in #role-assignment: [{e.Author.Username}#{e.Author.Discriminator}] {e.Message.Content}");
+                    Bot.Log($"Deleting message in #{e.Channel.Name}: [{e.Author.Username}#{e.Author.Discriminator}] {e.Message.Content}");
                     await e.Message.DeleteAsync();
                 }
             };
