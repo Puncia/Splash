@@ -17,6 +17,6 @@ RUN dotnet publish "Splash.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN useradd -m myuser
-USER myuser
+RUN useradd -m usr
+USER usr
 CMD [ "dotnet", "Splash.dll" ]

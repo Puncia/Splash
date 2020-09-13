@@ -120,7 +120,7 @@ namespace Splash
 
         private static Task Discord_Ready(DSharpPlus.EventArgs.ReadyEventArgs e)
         {
-            Log("ready", Header: false);
+            Log("Client ready", Header: false);
             Log($"port is {port}");
 
             e.Client.DebugLogger.LogMessage(DSharpPlus.LogLevel.Info,

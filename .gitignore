@@ -344,3 +344,4 @@ config.json
 
 .vscode
 deploy.bat
+env.list
