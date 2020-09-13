@@ -343,5 +343,5 @@ healthchecksdb
 config.json
 
 .vscode
-deploy.bat
+runlocal.bat
 env.list
