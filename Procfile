@@ -1,1 +1,0 @@
-Worker: dotnet Splash.dll
