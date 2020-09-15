@@ -3,4 +3,13 @@ solution: Splash.sln
 mono: none
 dotnet: 3.1
 script:
-    - dotnet restore
+- dotnet restore
+deploy:
+  provider: heroku
+  api_key:
+    secure: CeBh57saCwbYTTo67D5qFO7E0yrVZqmZCOye4fUmWnFGSC2fZSvuVvIg8FSJ7tuaTQDR3B1ekSWm0j5+xqzcDKwvRqNivaBxglUX08e273kVxI5HWrhmoDBrO6pmHc9W/xThvfTnoZfNhXLck3n5nm2AhMJ90PTxzoaIgH9FcO9Nco+OpXNJ44nxJPdxhuGYptHUd1WdEhnT4j3sF2cUJEpnGZcHcARwjge+DU57knmjx4kCAk1WriQZKXhhiT5VQRX/OwMgwQ/42g/qipIVivQPB0usjD0AkGqjjLcRY4ZuCFeMkFx/jWPRQUUTOEWLjnhjS1LHPMzt65/FyA8fhJE0oOsPkXk/OrbaOcMCN5TEri6yyXLeEYqHJkEaSnHyOnKddARzldCZZ+trLd3Ws+7NXdssLgHmv5VwnAZlhwE0WiWiKbSmoClDHJ8gdn+P+eLmHJG91XKIjkNvUDOl3jEu/aXL3bD2Fd02ctt+wZgs8p8SLejP7OhNLy9sS1IStwP1vdFER0ZCo7K4VA+EJlGyqT89dw78ZPcckm4rJ6xSw87356sbS28VzFPIN796M11egUoEmjg7pwzn5glXJ4rlZ8KkLrxWN3LPzy1IXZynC171GVkpkpynGtcKcgt4o/dmkS4k6ECOX9L4LjFjLLBd03+gX4GFTT8sni92LBU=
+  app: Splash
+  on:
+    repo: Puncia/Splash
+    branch: main
+  skip_cleanup: 'true'
